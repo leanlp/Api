@@ -42,8 +42,12 @@ export class UsersController {
     name: 'x-password',
     description: 'Password header',
   })
-  async findAllDecrypted(@Headers('x-password') password: string): Promise<any[]> {
-    if (password !== 'h') {
+  @ApiHeader({
+    name: 'x-second-password',
+    description: 'Second Password header',
+  })
+  async findAllDecrypted(@Headers('x-password') password: string, @Headers('x-second-password') secondPassword: string): Promise<any[]> {
+    if (password !== 'h' || secondPassword !== 'h2') {
       throw new UnauthorizedException('Invalid password');
     }
     return this.usersService.findAllDecrypted();
