@@ -21,12 +21,16 @@ export class UsersService {
     this.iv = Buffer.from(iv, 'hex');
   }
 
+
   async create(user: User): Promise<User> {
-    const encryptedUser = this.encryptUserData(user.toObject());
+    const encryptedUser = this.encryptUserData(user);
     const createdUser = new this.userModel(encryptedUser);
     return createdUser.save();
   }
-
+    
+      async findOne(username: string): Promise<User | undefined> {
+        return this.userModel.findOne({ username }).exec();
+      }
   async findAll(): Promise<User[]> {
     const users = await this.userModel.find().exec();
     return users.map(user => this.decryptUserData(user.toObject()));
