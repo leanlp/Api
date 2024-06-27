@@ -2,11 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
+
 @Schema()
 export class User extends Document {
   @ApiProperty({ example: '2021-04-04T07:00:50.276Z', description: 'The encrypted date when the user was created' })
   @Prop({ required: true })
-  fec_alta: string; // Store the encrypted date as a string
+  fec_alta: string;
 
   @ApiProperty({ example: 'Filomena.Collins', description: 'The name of the user' })
   @Prop({ required: true })
@@ -68,9 +69,9 @@ export class User extends Document {
   @Prop({ required: true })
   auto_color: string;
 
-  @ApiProperty({ example: 84978, description: 'The number of purchases made by the user' })
+  @ApiProperty({ example: '84978', description: 'The number of purchases made by the user' })
   @Prop({ required: true })
-  cantidad_compras_realizadas: number; // Store as number
+  cantidad_compras_realizadas: string;  // Store as string
 
   @ApiProperty({ example: 'https://cdn.fakercloud.com/avatars/muringa_128.jpg', description: 'The avatar URL of the user' })
   @Prop({ required: true })
@@ -79,9 +80,6 @@ export class User extends Document {
   @ApiProperty({ example: '2022-03-28T21:18:02.439Z', description: 'The birthdate of the user' })
   @Prop({ required: true })
   fec_birthday: string; // Store as string
-
-  @Prop()
-  __v: number; // Ensure __v is a number
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
