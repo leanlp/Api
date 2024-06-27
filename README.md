@@ -40,34 +40,51 @@ The Secure Data API provides endpoints for managing secure customer data, includ
 
 ## Run API
 
+```bash
+git clone https://github.com/leanlp/Api-security.git
+```
+
+## Using Docker
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+
+1. Rename the .envExample file to .env
+
+```bash 
+mv .envDocker .env
+```
+1. 
+```bash
+docker-compose build --no-cache
+docker-compose up -d
+```
+1. Check the logs to ensure everything is running
+   
+```bash
+docker-compose logs -f
+```
+
+## Using NestJs
+
 1. Install dependency
 
 ```bash
 npm install
 ```
 
-2. Rename the .envExample file to .env
+2. Rename the .envNest file to .env
    
 ```bash 
-mv .envExample .env
+mv .envNest .env
 ```
 3. Start the development server
 ```bash 
 npm run start:dev
 ```
 
-## Using Docker
-
-1. 
-```bash
-docker-compose build --no-cache
-docker-compose up -d
-```
-2. Check the logs to ensure everything is running
-   
-```bash
-docker-compose logs -f
-```
 
 ## Password Hashing
 
