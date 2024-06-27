@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { UsersService } from './user.service';
+import { UsersService } from './user.service';  
 import { User } from './user.schema';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -19,12 +19,21 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return all users.' })
+  @Get('encrypted')
+  @ApiOperation({ summary: 'Get all users (encrypted)' })
+  @ApiResponse({ status: 200, description: 'Return all users with encrypted data.' })
   @ApiBearerAuth()
-  async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  async findAllEncrypted(): Promise<User[]> {
+    return this.usersService.findAllEncrypted();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('decrypted')
+  @ApiOperation({ summary: 'Get all users (decrypted)' })
+  @ApiResponse({ status: 200, description: 'Return all users with decrypted data.' })
+  @ApiBearerAuth()
+  async findAllDecrypted(): Promise<any[]> {
+    return this.usersService.findAllDecrypted();
   }
 
   @UseGuards(JwtAuthGuard)
