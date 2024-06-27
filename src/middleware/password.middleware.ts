@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 export class PasswordMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const password = req.headers['x-password'];
-    console.log('Received password:', password);
+ 
     
     if (!password || password !== 'h') {
       throw new UnauthorizedException('Invalid password');
