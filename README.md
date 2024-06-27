@@ -56,6 +56,19 @@ mv .envExample .env
 npm run start:dev
 ```
 
+## Using Docker
+
+1. 
+```bash
+docker-compose build --no-cache
+docker-compose up -d
+```
+2. Check the logs to ensure everything is running
+   
+```bash
+docker-compose logs -f
+```
+
 ## Password Hashing
 
 ```bash
