@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { User } from './user.schema';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiHeader, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -17,19 +18,16 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
-  @ApiHeader({
-    name: 'x-password',
-    description: 'Password to access this endpoint',
-    required: true,
-  })
-  @ApiBearerAuth('password')
+  @ApiBearerAuth()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('fetch')
   @ApiOperation({ summary: 'Fetch and store users from external API' })
   @ApiResponse({ status: 200, description: 'Users fetched and stored successfully.' })

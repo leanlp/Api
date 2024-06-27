@@ -8,26 +8,26 @@ import * as crypto from 'crypto';
 @Injectable()
 export class UsersService {
   private readonly algorithm = 'aes-256-cbc';
-  private readonly key = crypto.randomBytes(32); // Use a secure way to manage this key
-  private readonly iv = crypto.randomBytes(16); // Use a secure way to manage this IV
+  private readonly key = crypto.randomBytes(32); 
+  private readonly iv = crypto.randomBytes(16); 
 
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(user: User): Promise<User> {
-    const encryptedUser = this.encryptUserData(user);
+    const encryptedUser = this.encryptUserData(user.toObject());
     const createdUser = new this.userModel(encryptedUser);
     return createdUser.save();
   }
 
   async findAll(): Promise<User[]> {
     const users = await this.userModel.find().exec();
-    return users.map(user => this.decryptUserData(user));
+    return users.map(user => this.decryptUserData(user.toObject()));
   }
 
   async fetchAndStoreUsers(): Promise<void> {
     try {
       const { data } = await axios.get('https://62433a7fd126926d0c5d296b.mockapi.io/api/v1/usuarios');
-      
+
       const transformedData = data.map((userData: any) => {
         const encryptedData = this.encryptUserData(userData);
         return new this.userModel(encryptedData);
@@ -44,7 +44,12 @@ export class UsersService {
     const encryptedData: any = {};
     for (const key in userData) {
       if (userData.hasOwnProperty(key)) {
-        encryptedData[key] = this.encryptValue(userData[key].toString());
+        
+        if (key === '_id' || key === '__v' || typeof userData[key] === 'number') {
+          encryptedData[key] = userData[key];
+        } else {
+          encryptedData[key] = this.encryptValue(userData[key].toString());
+        }
       }
     }
     return encryptedData;
@@ -54,7 +59,12 @@ export class UsersService {
     const decryptedData: any = {};
     for (const key in userData) {
       if (userData.hasOwnProperty(key)) {
-        decryptedData[key] = this.decryptValue(userData[key]);
+        
+        if (key === '_id' || key === '__v' || typeof userData[key] === 'number') {
+          decryptedData[key] = userData[key];
+        } else {
+          decryptedData[key] = this.decryptValue(userData[key]);
+        }
       }
     }
     return decryptedData;

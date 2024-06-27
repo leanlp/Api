@@ -16,6 +16,6 @@ export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(PasswordMiddleware)
-      .forRoutes({ path: 'users', method: RequestMethod.GET });
+      .forRoutes('users');
   }
 }

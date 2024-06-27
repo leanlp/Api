@@ -70,7 +70,7 @@ export class User extends Document {
 
   @ApiProperty({ example: 84978, description: 'The number of purchases made by the user' })
   @Prop({ required: true })
-  cantidad_compras_realizadas: string; // Store as string
+  cantidad_compras_realizadas: number; // Store as number
 
   @ApiProperty({ example: 'https://cdn.fakercloud.com/avatars/muringa_128.jpg', description: 'The avatar URL of the user' })
   @Prop({ required: true })
@@ -79,6 +79,9 @@ export class User extends Document {
   @ApiProperty({ example: '2022-03-28T21:18:02.439Z', description: 'The birthdate of the user' })
   @Prop({ required: true })
   fec_birthday: string; // Store as string
+
+  @Prop()
+  __v: number; // Ensure __v is a number
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
