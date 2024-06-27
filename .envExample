@@ -1,3 +1,13 @@
 
 MONGO_URI=mongodb://localhost:27017/securedata
+
+SENSITIVE_DATA_MONGO_URI=mongodb://localhost:27017/sensitiveDataDB
+
 JWT_SECRET=your_jwt_secret
+
+ENCRYPTION_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+ENCRYPTION_IV=0123456789abcdef0123456789abcdef
+
+
+PASSWORD_HASH=$2a$10$lYOttEk9V/bK1yZ1clASQOdVMJGn.Gcwi9DABavgQ3bDniXVB9t8K         # = "h"
+SECOND_PASSWORD_HASH=$2a$10$GmLpOfvQQo4pkhlEzWrBb.1Ay7iUZVIXRWhi8Rt8POKNMqnJDDbbe  # = "h2"

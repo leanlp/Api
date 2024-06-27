@@ -9,10 +9,18 @@ async function bootstrap() {
     .setTitle('Secure Data API')
     .setDescription('API for managing secure data')
     .setVersion('1.0')
-    .addTag('users')
+    .addTag('Secure API')
     .addApiKey(
       { type: 'apiKey', name: 'x-password', in: 'header' },
       'password',
+    )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
