@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { UsersService } from './user.service';  
+import { Controller, Get, Post, Body, UseGuards, Headers, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from './user.service';
 import { User } from './user.schema';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('users')
+@ApiBearerAuth('access-token')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -22,8 +23,14 @@ export class UsersController {
   @Get('encrypted')
   @ApiOperation({ summary: 'Get all users (encrypted)' })
   @ApiResponse({ status: 200, description: 'Return all users with encrypted data.' })
-  @ApiBearerAuth()
-  async findAllEncrypted(): Promise<User[]> {
+  @ApiHeader({
+    name: 'x-password',
+    description: 'Password header',
+  })
+  async findAllEncrypted(@Headers('x-password') password: string): Promise<User[]> {
+    if (password !== 'h') {
+      throw new UnauthorizedException('Invalid password');
+    }
     return this.usersService.findAllEncrypted();
   }
 
@@ -31,8 +38,14 @@ export class UsersController {
   @Get('decrypted')
   @ApiOperation({ summary: 'Get all users (decrypted)' })
   @ApiResponse({ status: 200, description: 'Return all users with decrypted data.' })
-  @ApiBearerAuth()
-  async findAllDecrypted(): Promise<any[]> {
+  @ApiHeader({
+    name: 'x-password',
+    description: 'Password header',
+  })
+  async findAllDecrypted(@Headers('x-password') password: string): Promise<any[]> {
+    if (password !== 'h') {
+      throw new UnauthorizedException('Invalid password');
+    }
     return this.usersService.findAllDecrypted();
   }
 
@@ -40,7 +53,14 @@ export class UsersController {
   @Get('fetch')
   @ApiOperation({ summary: 'Fetch and store users from external API' })
   @ApiResponse({ status: 200, description: 'Users fetched and stored successfully.' })
-  async fetchAndStoreUsers() {
+  @ApiHeader({
+    name: 'x-password',
+    description: 'Password header',
+  })
+  async fetchAndStoreUsers(@Headers('x-password') password: string): Promise<any> {
+    if (password !== 'h') {
+      throw new UnauthorizedException('Invalid password');
+    }
     await this.usersService.fetchAndStoreUsers();
     return { message: 'Users fetched and stored successfully' };
   }

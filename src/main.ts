@@ -14,6 +14,14 @@ async function bootstrap() {
       { type: 'apiKey', name: 'x-password', in: 'header' },
       'password',
     )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, document);
