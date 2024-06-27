@@ -8,10 +8,18 @@ import * as crypto from 'crypto';
 @Injectable()
 export class UsersService {
   private readonly algorithm = 'aes-256-cbc';
-  private readonly key = crypto.randomBytes(32); 
-  private readonly iv = crypto.randomBytes(16); 
+  private readonly key: Buffer;
+  private readonly iv: Buffer;
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {
+    const key = process.env.ENCRYPTION_KEY;
+    const iv = process.env.ENCRYPTION_IV;
+    if (!key || !iv || key.length !== 64 || iv.length !== 32) {
+      throw new Error('Encryption key must be 32 bytes and IV must be 16 bytes, both represented as hex strings in environment variables');
+    }
+    this.key = Buffer.from(key, 'hex');
+    this.iv = Buffer.from(iv, 'hex');
+  }
 
   async create(user: User): Promise<User> {
     const encryptedUser = this.encryptUserData(user.toObject());
@@ -20,6 +28,15 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
+    const users = await this.userModel.find().exec();
+    return users.map(user => this.decryptUserData(user.toObject()));
+  }
+
+  async findAllEncrypted(): Promise<User[]> {
+    return this.userModel.find().exec();
+  }
+
+  async findAllDecrypted(): Promise<User[]> {
     const users = await this.userModel.find().exec();
     return users.map(user => this.decryptUserData(user.toObject()));
   }
@@ -44,8 +61,9 @@ export class UsersService {
     const encryptedData: any = {};
     for (const key in userData) {
       if (userData.hasOwnProperty(key)) {
-        
-        if (key === '_id' || key === '__v' || typeof userData[key] === 'number') {
+        if (key === '_id' || key === '__v') {
+          encryptedData[key] = userData[key];
+        } else if (key === 'compras_realizadas') {
           encryptedData[key] = userData[key];
         } else {
           encryptedData[key] = this.encryptValue(userData[key].toString());
@@ -59,8 +77,9 @@ export class UsersService {
     const decryptedData: any = {};
     for (const key in userData) {
       if (userData.hasOwnProperty(key)) {
-        
-        if (key === '_id' || key === '__v' || typeof userData[key] === 'number') {
+        if (key === '_id' || key === '__v') {
+          decryptedData[key] = userData[key];
+        } else if (key === 'compras_realizadas') {
           decryptedData[key] = userData[key];
         } else {
           decryptedData[key] = this.decryptValue(userData[key]);
