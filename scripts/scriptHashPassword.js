@@ -6,8 +6,11 @@ async function hashPassword(password) {
 }
 
 async function main() {
-  const hashedPassword = await hashPassword('test');
+  const hashedPassword = await hashPassword('h');
   console.log('Hashed password:', hashedPassword);
+
+  const hashedPassword2 = await hashPassword('h2');
+  console.log('Hashed password 2:', hashedPassword2);
 }
 
 main();

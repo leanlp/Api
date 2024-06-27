@@ -3,6 +3,7 @@ import { UsersService } from './user.service';
 import { User } from './user.schema';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import * as bcrypt from 'bcryptjs';
 
 @ApiTags('users')
 @ApiBearerAuth('access-token')
@@ -28,7 +29,8 @@ export class UsersController {
     description: 'Password header',
   })
   async findAllEncrypted(@Headers('x-password') password: string): Promise<User[]> {
-    if (password !== 'h') {
+    const passwordHash = process.env.PASSWORD_HASH;
+    if (!await bcrypt.compare(password, passwordHash)) {
       throw new UnauthorizedException('Invalid password');
     }
     return this.usersService.findAllEncrypted();
@@ -47,9 +49,17 @@ export class UsersController {
     description: 'Second Password header',
   })
   async findAllDecrypted(@Headers('x-password') password: string, @Headers('x-second-password') secondPassword: string): Promise<any[]> {
-    if (password !== 'h' || secondPassword !== 'h2') {
+    const passwordHash = process.env.PASSWORD_HASH;
+    const secondPasswordHash = process.env.SECOND_PASSWORD_HASH;
+    if (!passwordHash || !secondPasswordHash) {
+      throw new UnauthorizedException('Passwords are not configured correctly');
+    }
+    
+
+    if (!await bcrypt.compare(password, passwordHash) || !await bcrypt.compare(secondPassword, secondPasswordHash)) {
       throw new UnauthorizedException('Invalid password');
     }
+
     return this.usersService.findAllDecrypted();
   }
 
@@ -62,7 +72,8 @@ export class UsersController {
     description: 'Password header',
   })
   async fetchAndStoreUsers(@Headers('x-password') password: string): Promise<any> {
-    if (password !== 'h') {
+    const passwordHash = process.env.PASSWORD_HASH;
+    if (!await bcrypt.compare(password, passwordHash)) {
       throw new UnauthorizedException('Invalid password');
     }
     await this.usersService.fetchAndStoreUsers();
